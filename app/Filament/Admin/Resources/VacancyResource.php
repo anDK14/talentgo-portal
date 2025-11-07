@@ -36,12 +36,19 @@ class VacancyResource extends Resource
                 Forms\Components\Section::make('Detail Lowongan')
                     ->schema([
                         Forms\Components\Select::make('client_id')
-                            ->relationship('client', 'company_name')
-                            ->required()
-                            ->searchable()
-                            ->preload()
-                            ->label('Perusahaan Klien')
-                            ->helperText('Pilih perusahaan klien'),
+                        ->relationship('client', 'company_name')
+                        ->required()
+                        ->searchable()
+                        ->preload()
+                        ->label('Perusahaan Klien')
+                        ->helperText('Pilih perusahaan klien')
+                        ->default(function () {
+                            // Ambil client_id dari URL parameter
+                            $clientId = request()->query('client_id');
+                            return $clientId ?: null;
+                        })
+                        ->disabled(fn ($operation) => $operation === 'edit') // Optional: disable edit
+                        ->dehydrated(), // Tetap simpan ke database meski disabled
                         Forms\Components\Select::make('status_id')
                             ->relationship('status', 'status_name')
                             ->required()

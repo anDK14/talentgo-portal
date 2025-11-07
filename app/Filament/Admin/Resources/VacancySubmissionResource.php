@@ -34,17 +34,21 @@ class VacancySubmissionResource extends Resource
                 Forms\Components\Section::make('Detail Pengajuan')
                     ->schema([
                         Forms\Components\Select::make('vacancy_id')
-                            ->relationship('vacancy', 'position_name')
-                            ->required()
-                            ->searchable()
-                            ->preload()
-                            ->label('Lowongan')
-                            ->helperText('Pilih lowongan untuk kandidat ini')
-                            ->live()
-                            ->afterStateUpdated(function ($state, Forms\Set $set) {
-                                // Auto-set submitted_by_user_id ketika vacancy dipilih
-                                $set('submitted_by_user_id', auth()->id());
-                            }),
+                        ->relationship('vacancy', 'position_name')
+                        ->required()
+                        ->searchable()
+                        ->preload()
+                        ->label('Lowongan')
+                        ->helperText('Pilih lowongan untuk kandidat ini')
+                        ->default(function () {
+                            // Ambil vacancy_id dari URL parameter
+                            return request()->query('vacancy_id');
+                        })
+                        ->live()
+                        ->afterStateUpdated(function ($state, Forms\Set $set) {
+                            // Auto-set submitted_by_user_id ketika vacancy dipilih
+                            $set('submitted_by_user_id', auth()->id());
+                        }),
                         Forms\Components\Select::make('candidate_id')
                             ->relationship('candidate', 'full_name')
                             ->required()

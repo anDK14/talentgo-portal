@@ -161,9 +161,6 @@ class VacancyResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make()
-                        ->label('Detail')
-                        ->icon('heroicon-o-eye'),
                     Tables\Actions\EditAction::make()
                         ->label('Edit')
                         ->icon('heroicon-o-pencil'),
