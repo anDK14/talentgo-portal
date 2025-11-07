@@ -138,7 +138,7 @@ class SubmissionsRelationManager extends RelationManager
     ->body('Feedback Anda untuk kandidat ' . $record->candidate->unique_talent_id . ' telah direkam. Tim TalentGO akan menghubungi Anda dalam 1x24 jam untuk koordinasi wawancara.')
     ->icon('heroicon-o-check-badge')
     ->iconColor('success')
-    ->duration(1000) // 5 detik
+    ->duration(10000) // 5 detik
     ->send();
     })
     ->visible(fn ($record) => $record->submission_status_id === 1),
@@ -168,7 +168,7 @@ Tables\Actions\Action::make('markRejected')
     ->body('Terima kasih atas feedback untuk kandidat ' . $record->candidate->unique_talent_id . '. Tim TalentGO akan mencari kandidat lain yang lebih sesuai dengan kebutuhan Anda.')
     ->icon('heroicon-o-x-circle')
     ->iconColor('danger')
-    ->duration(1000)
+    ->duration(10000)
     ->send();
     })
     ->visible(fn ($record) => $record->submission_status_id === 1),
