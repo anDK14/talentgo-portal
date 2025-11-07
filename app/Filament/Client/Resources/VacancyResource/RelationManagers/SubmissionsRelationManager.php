@@ -114,44 +114,64 @@ class SubmissionsRelationManager extends RelationManager
                         ->disabled(fn ($record) => $record->submission_status_id !== 1),
 
                     Tables\Actions\Action::make('markInterested')
-                        ->label('Tertarik, Jadwalkan Wawancara')
-                        ->icon('heroicon-o-check')
-                        ->color('success')
-                        ->requiresConfirmation()
-                        ->modalHeading('Konfirmasi Feedback')
-                        ->modalDescription('Apakah Anda tertarik dengan kandidat ini dan ingin menjadwalkan wawancara?')
-                        ->modalSubmitActionLabel('Ya, Tertarik')
-                        ->modalCancelActionLabel('Batal')
-                        ->action(function ($record) {
-                            $record->update([
-                                'submission_status_id' => 2, // client_interested
-                                'client_feedback' => 'Klien menyatakan tertarik dan meminta jadwalkan wawancara.',
-                            ]);
-                            
-                            // Trigger event for notification
-                            \App\Events\ClientFeedbackGiven::dispatch($record);
-                        })
-                        ->visible(fn ($record) => $record->submission_status_id === 1),
+    ->label('Tertarik, Jadwalkan Wawancara')
+    ->icon('heroicon-o-check')
+    ->color('success')
+    ->requiresConfirmation()
+    ->modalHeading('Konfirmasi Feedback')
+    ->modalDescription('Apakah Anda tertarik dengan kandidat ini dan ingin menjadwalkan wawancara?')
+    ->modalSubmitActionLabel('Ya, Tertarik')
+    ->modalCancelActionLabel('Batal')
+    ->action(function ($record) {
+        $record->update([
+            'submission_status_id' => 2, // client_interested
+            'client_feedback' => 'Klien menyatakan tertarik dan meminta jadwalkan wawancara.',
+        ]);
+        
+        // Trigger event for notification
+        \App\Events\ClientFeedbackGiven::dispatch($record);
+        
+        // Success notification
+        \Filament\Notifications\Notification::make()
+    ->success()
+    ->title('✅ Tertarik Dikonfirmasi!')
+    ->body('Feedback Anda untuk kandidat ' . $record->candidate->unique_talent_id . ' telah direkam. Tim TalentGO akan menghubungi Anda dalam 1x24 jam untuk koordinasi wawancara.')
+    ->icon('heroicon-o-check-badge')
+    ->iconColor('success')
+    ->duration(1000) // 5 detik
+    ->send();
+    })
+    ->visible(fn ($record) => $record->submission_status_id === 1),
 
-                    Tables\Actions\Action::make('markRejected')
-                        ->label('Tidak Sesuai')
-                        ->icon('heroicon-o-x-mark')
-                        ->color('danger')
-                        ->requiresConfirmation()
-                        ->modalHeading('Konfirmasi Feedback')
-                        ->modalDescription('Apakah kandidat ini tidak sesuai dengan kebutuhan Anda?')
-                        ->modalSubmitActionLabel('Ya, Tidak Sesuai')
-                        ->modalCancelActionLabel('Batal')
-                        ->action(function ($record) {
-                            $record->update([
-                                'submission_status_id' => 3, // client_rejected
-                                'client_feedback' => 'Klien menyatakan kandidat tidak sesuai dengan kebutuhan.',
-                            ]);
-                            
-                            // Trigger event for notification
-                            \App\Events\ClientFeedbackGiven::dispatch($record);
-                        })
-                        ->visible(fn ($record) => $record->submission_status_id === 1),
+Tables\Actions\Action::make('markRejected')
+    ->label('Tidak Sesuai')
+    ->icon('heroicon-o-x-mark')
+    ->color('danger')
+    ->requiresConfirmation()
+    ->modalHeading('Konfirmasi Feedback')
+    ->modalDescription('Apakah kandidat ini tidak sesuai dengan kebutuhan Anda?')
+    ->modalSubmitActionLabel('Ya, Tidak Sesuai')
+    ->modalCancelActionLabel('Batal')
+    ->action(function ($record) {
+        $record->update([
+            'submission_status_id' => 3, // client_rejected
+            'client_feedback' => 'Klien menyatakan kandidat tidak sesuai dengan kebutuhan.',
+        ]);
+        
+        // Trigger event for notification
+        \App\Events\ClientFeedbackGiven::dispatch($record);
+        
+        // Success notification
+        \Filament\Notifications\Notification::make()
+    ->success()
+    ->title('🚫 Tidak Sesuai Dikonfirmasi')
+    ->body('Terima kasih atas feedback untuk kandidat ' . $record->candidate->unique_talent_id . '. Tim TalentGO akan mencari kandidat lain yang lebih sesuai dengan kebutuhan Anda.')
+    ->icon('heroicon-o-x-circle')
+    ->iconColor('danger')
+    ->duration(1000)
+    ->send();
+    })
+    ->visible(fn ($record) => $record->submission_status_id === 1),
                 ])
                 ->label('Aksi')
                 ->button()

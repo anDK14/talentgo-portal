@@ -95,16 +95,16 @@ class VacancyResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('position_name')
+                    ->label('Posisi')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('client.company_name')
                     ->label('Klien')
                     ->searchable()
                     ->sortable()
                     ->description(fn ($record) => $record->client->contact_person)
                     ->weight('semibold'),
-                Tables\Columns\TextColumn::make('position_name')
-                    ->label('Posisi')
-                    ->searchable()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('level')
                     ->label('Level')
                     ->badge()
