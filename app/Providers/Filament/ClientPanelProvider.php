@@ -70,12 +70,6 @@ class ClientPanelProvider extends PanelProvider
                 Authenticate::class,
                 EnsureUserIsClient::class,
             ])
-            ->databaseNotifications()
-            ->globalSearchKeyBindings(['command+k', 'ctrl+k']) // Quick search
-            ->navigationGroups([
-                'Recruitment',
-                'Company',
-            ])
             ->spa(); // Single Page Application untuk smoother experience
     }
 }
