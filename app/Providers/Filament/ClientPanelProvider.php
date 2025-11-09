@@ -27,18 +27,14 @@ class ClientPanelProvider extends PanelProvider
             ->id('client')
             ->path('portal')
             ->login()
-            ->registration() // Optional: jika mau ada registrasi client
-            ->passwordReset() // Optional: reset password
-            ->emailVerification() // Optional: verifikasi email
-            ->profile() // Optional: profile page
-            ->topNavigation() // ✅ TOP NAVIGATION untuk client
+            ->topNavigation()
             ->brandName('TalentGO Client Portal')
             ->brandLogo(asset('https://careers.talentgo.id/_image/w_256,q_80/assets/Logo-TalentGO-2_jcWErwW-u4_DIvO4FDIa1.png'))
             ->brandLogoHeight('2.5rem')
             ->favicon(asset('https://careers.talentgo.id/_image/w_256,q_80/assets/Logo-TalentGO-2_jcWErwW-u4_DIvO4FDIa1.png'))
             ->colors([
-                'primary' => Color::hex('#33A8E0'), // Biru muda TalentGO
-                'secondary' => Color::hex('#F5B73E'), // Kuning keemasan GO
+                'primary' => Color::hex('#33A8E0'),
+                'secondary' => Color::hex('#F5B73E'),
                 'gray' => Color::hex('#6B7280'),
                 'success' => Color::hex('#10B981'),
                 'danger' => Color::hex('#EF4444'),
@@ -70,6 +66,6 @@ class ClientPanelProvider extends PanelProvider
                 Authenticate::class,
                 EnsureUserIsClient::class,
             ])
-            ->spa(); // Single Page Application untuk smoother experience
+            ->spa();
     }
 }
