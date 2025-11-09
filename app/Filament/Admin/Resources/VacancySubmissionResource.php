@@ -81,9 +81,21 @@ class VacancySubmissionResource extends Resource
                         Forms\Components\Textarea::make('client_feedback')
                             ->label('Catatan Tanggapan Klien')
                             ->rows(3)
-                            ->placeholder('Masukkan tanggapan dari klien...')
-                            ->columnSpanFull(),
-                    ]),
+                            ->placeholder(
+                fn ($record) => $record && $record->client_feedback 
+                    ? $record->client_feedback 
+                    : 'Belum ada tanggapan dari klien.'
+            )
+            ->readOnly() // Ini yang membuat field readonly
+            ->disabled() // Tambahkan disabled juga untuk extra protection
+            ->dehydrated() // Tetap simpan value ke database jika ada perubahan lain
+            ->helperText(
+                fn ($record) => $record && $record->client_feedback 
+                    ? 'Tanggapan dari klien - hanya bisa diubah oleh klien melalui portal'
+                    : 'Klien belum memberikan tanggapan'
+            )
+            ->columnSpanFull(),
+    ])
             ]);
     }
 

@@ -61,6 +61,7 @@ class ClientPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                'update.lastlogin',
             ])
             ->authMiddleware([
                 Authenticate::class,
