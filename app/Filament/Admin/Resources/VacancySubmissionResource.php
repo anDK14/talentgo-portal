@@ -151,15 +151,15 @@ class VacancySubmissionResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('viewCandidate')
+                        ->label('Lihat Kandidat')
+                        ->icon('heroicon-o-eye')
+                        ->url(fn ($record) => \App\Filament\Admin\Resources\CandidateResource::getUrl('edit', ['record' => $record->candidate_id]))
+                        ->color('gray')
+                        ->openUrlInNewTab(),
                     Tables\Actions\EditAction::make()
                         ->label('Edit Pengajuan')
                         ->icon('heroicon-o-pencil'),
-                    Tables\Actions\Action::make('viewCandidate')
-                        ->label('Lihat Kandidat')
-                        ->icon('heroicon-o-user')
-                        ->url(fn ($record) => \App\Filament\Admin\Resources\CandidateResource::getUrl('edit', ['record' => $record->candidate_id]))
-                        ->color('info')
-                        ->openUrlInNewTab(),
                     Tables\Actions\Action::make('viewVacancy')
                         ->label('Lihat Lowongan')
                         ->icon('heroicon-o-briefcase')
@@ -224,6 +224,7 @@ class VacancySubmissionResource extends Resource
                     Tables\Actions\BulkAction::make('markInterested')
                         ->label('Tandai sebagai Tertarik')
                         ->icon('heroicon-o-check')
+                        ->color('success')
                         ->action(function ($records) {
                             $records->each(function ($record) {
                                 $record->update([
@@ -236,6 +237,7 @@ class VacancySubmissionResource extends Resource
                     Tables\Actions\BulkAction::make('markRejected')
                         ->label('Tandai sebagai Ditolak')
                         ->icon('heroicon-o-x-mark')
+                        ->color('danger')
                         ->action(function ($records) {
                             $records->each(function ($record) {
                                 $record->update([

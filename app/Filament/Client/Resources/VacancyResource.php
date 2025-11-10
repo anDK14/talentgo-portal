@@ -163,7 +163,8 @@ class VacancyResource extends Resource
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\EditAction::make()
                         ->label('Edit')
-                        ->icon('heroicon-o-pencil'),
+                        ->icon('heroicon-o-pencil')
+                        ->visible(fn ($record) => $record->status_id === 1),
                     Tables\Actions\Action::make('viewCandidates')
                         ->label('Lihat Kandidat & Detail')
                         ->icon('heroicon-o-eye')
@@ -199,7 +200,8 @@ class VacancyResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
                         ->label('Hapus Lowongan Terpilih')
-                        ->icon('heroicon-o-trash'),
+                        ->icon('heroicon-o-trash')
+                        ->visible(fn () => false),
                     Tables\Actions\BulkAction::make('closeSelected')
                         ->label('Tutup Lowongan Terpilih')
                         ->icon('heroicon-o-lock-closed')

@@ -45,7 +45,7 @@ class SubmissionsRelationManager extends RelationManager
                     ->sortable()
                     ->color('primary')
                     ->weight('semibold'),
-                
+
                 Tables\Columns\TextColumn::make('candidate.experience_summary')
                     ->label('Ringkasan Pengalaman')
                     ->limit(80)
@@ -53,7 +53,7 @@ class SubmissionsRelationManager extends RelationManager
                         return $record->candidate->experience_summary;
                     })
                     ->wrap(),
-                
+
                 Tables\Columns\TextColumn::make('candidate.skills_summary')
                     ->label('Keahlian')
                     ->limit(50)
@@ -61,29 +61,29 @@ class SubmissionsRelationManager extends RelationManager
                         return $record->candidate->skills_summary;
                     })
                     ->wrap(),
-                
+
                 Tables\Columns\TextColumn::make('status.status_name')
                     ->label('Status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'submitted' => 'info',
                         'client_interested' => 'success',
                         'client_rejected' => 'danger',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn ($state) => match ($state) {
+                    ->formatStateUsing(fn($state) => match ($state) {
                         'submitted' => 'Menunggu Review',
                         'client_interested' => 'Tertarik',
                         'client_rejected' => 'Tidak Sesuai',
                         default => $state,
                     })
                     ->sortable(),
-                
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Diajukan Pada')
                     ->dateTime('d M Y H:i')
                     ->sortable()
-                    ->description(fn ($record) => $record->created_at->diffForHumans()),
+                    ->description(fn($record) => $record->created_at->diffForHumans()),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
@@ -97,13 +97,13 @@ class SubmissionsRelationManager extends RelationManager
                     Tables\Actions\Action::make('viewBlindCV')
                         ->label('Lihat Blind CV')
                         ->icon('heroicon-o-eye')
-                        ->color('info')
+                        ->color('gray')
                         ->modalHeading(function ($record) {
                             return 'Blind CV - ' . ($record->candidate->unique_talent_id ?? 'Talent ID Tidak Diketahui');
                         })
                         ->modalContent(function ($record) {
                             $blindCV = $record->candidate->blind_cv;
-                            
+
                             return view('filament.client.components.blind-cv', [
                                 'blindCV' => $blindCV,
                                 'submission' => $record,
@@ -111,71 +111,71 @@ class SubmissionsRelationManager extends RelationManager
                         })
                         ->modalSubmitAction(false)
                         ->modalCancelActionLabel('Tutup')
-                        ->disabled(fn ($record) => $record->submission_status_id !== 1),
+                        ->disabled(fn($record) => $record->submission_status_id !== 1),
 
                     Tables\Actions\Action::make('markInterested')
-    ->label('Tertarik, Jadwalkan Wawancara')
-    ->icon('heroicon-o-check')
-    ->color('success')
-    ->requiresConfirmation()
-    ->modalHeading('Konfirmasi Feedback')
-    ->modalDescription('Apakah Anda tertarik dengan kandidat ini dan ingin menjadwalkan wawancara?')
-    ->modalSubmitActionLabel('Ya, Tertarik')
-    ->modalCancelActionLabel('Batal')
-    ->action(function ($record) {
-        $record->update([
-            'submission_status_id' => 2, // client_interested
-            'client_feedback' => 'Klien menyatakan tertarik dan meminta jadwalkan wawancara.',
-        ]);
-        
-        // Trigger event for notification
-        \App\Events\ClientFeedbackGiven::dispatch($record);
-        
-        // Success notification
-        \Filament\Notifications\Notification::make()
-    ->success()
-    ->title('✅ Tertarik Dikonfirmasi!')
-    ->body('Feedback Anda untuk kandidat ' . $record->candidate->unique_talent_id . ' telah direkam. Tim TalentGO akan menghubungi Anda dalam 1x24 jam untuk koordinasi wawancara.')
-    ->icon('heroicon-o-check-badge')
-    ->iconColor('success')
-    ->duration(10000) // 5 detik
-    ->send();
-    })
-    ->visible(fn ($record) => $record->submission_status_id === 1),
+                        ->label('Tertarik, Jadwalkan Wawancara')
+                        ->icon('heroicon-o-check')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->modalHeading('Konfirmasi Feedback')
+                        ->modalDescription('Apakah Anda tertarik dengan kandidat ini dan ingin menjadwalkan wawancara?')
+                        ->modalSubmitActionLabel('Ya, Tertarik')
+                        ->modalCancelActionLabel('Batal')
+                        ->action(function ($record) {
+                            $record->update([
+                                'submission_status_id' => 2, // client_interested
+                                'client_feedback' => 'Klien menyatakan tertarik dan meminta jadwalkan wawancara.',
+                            ]);
 
-Tables\Actions\Action::make('markRejected')
-    ->label('Tidak Sesuai')
-    ->icon('heroicon-o-x-mark')
-    ->color('danger')
-    ->requiresConfirmation()
-    ->modalHeading('Konfirmasi Feedback')
-    ->modalDescription('Apakah kandidat ini tidak sesuai dengan kebutuhan Anda?')
-    ->modalSubmitActionLabel('Ya, Tidak Sesuai')
-    ->modalCancelActionLabel('Batal')
-    ->action(function ($record) {
-        $record->update([
-            'submission_status_id' => 3, // client_rejected
-            'client_feedback' => 'Klien menyatakan kandidat tidak sesuai dengan kebutuhan.',
-        ]);
-        
-        // Trigger event for notification
-        \App\Events\ClientFeedbackGiven::dispatch($record);
-        
-        // Success notification
-        \Filament\Notifications\Notification::make()
-    ->success()
-    ->title('🚫 Tidak Sesuai Dikonfirmasi')
-    ->body('Terima kasih atas feedback untuk kandidat ' . $record->candidate->unique_talent_id . '. Tim TalentGO akan mencari kandidat lain yang lebih sesuai dengan kebutuhan Anda.')
-    ->icon('heroicon-o-x-circle')
-    ->iconColor('danger')
-    ->duration(10000)
-    ->send();
-    })
-    ->visible(fn ($record) => $record->submission_status_id === 1),
+                            // Trigger event for notification
+                            \App\Events\ClientFeedbackGiven::dispatch($record);
+
+                            // Success notification
+                            \Filament\Notifications\Notification::make()
+                                ->success()
+                                ->title('✅ Tertarik Dikonfirmasi!')
+                                ->body('Feedback Anda untuk kandidat ' . $record->candidate->unique_talent_id . ' telah direkam. Tim TalentGO akan menghubungi Anda dalam 1x24 jam untuk koordinasi wawancara.')
+                                ->icon('heroicon-o-check-badge')
+                                ->iconColor('success')
+                                ->duration(10000) // 5 detik
+                                ->send();
+                        })
+                        ->visible(fn($record) => $record->submission_status_id === 1),
+
+                    Tables\Actions\Action::make('markRejected')
+                        ->label('Tidak Sesuai')
+                        ->icon('heroicon-o-x-mark')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->modalHeading('Konfirmasi Feedback')
+                        ->modalDescription('Apakah kandidat ini tidak sesuai dengan kebutuhan Anda?')
+                        ->modalSubmitActionLabel('Ya, Tidak Sesuai')
+                        ->modalCancelActionLabel('Batal')
+                        ->action(function ($record) {
+                            $record->update([
+                                'submission_status_id' => 3, // client_rejected
+                                'client_feedback' => 'Klien menyatakan kandidat tidak sesuai dengan kebutuhan.',
+                            ]);
+
+                            // Trigger event for notification
+                            \App\Events\ClientFeedbackGiven::dispatch($record);
+
+                            // Success notification
+                            \Filament\Notifications\Notification::make()
+                                ->success()
+                                ->title('🚫 Tidak Sesuai Dikonfirmasi')
+                                ->body('Terima kasih atas feedback untuk kandidat ' . $record->candidate->unique_talent_id . '. Tim TalentGO akan mencari kandidat lain yang lebih sesuai dengan kebutuhan Anda.')
+                                ->icon('heroicon-o-x-circle')
+                                ->iconColor('danger')
+                                ->duration(10000)
+                                ->send();
+                        })
+                        ->visible(fn($record) => $record->submission_status_id === 1),
                 ])
-                ->label('Aksi')
-                ->button()
-                ->color('primary')
+                    ->label('Aksi')
+                    ->button()
+                    ->color('primary')
             ])
             ->bulkActions([]) // Client tidak bisa bulk actions
             ->emptyStateHeading('Belum ada kandidat yang diajukan')
