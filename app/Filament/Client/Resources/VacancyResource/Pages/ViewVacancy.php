@@ -3,7 +3,6 @@
 namespace App\Filament\Client\Resources\VacancyResource\Pages;
 
 use App\Filament\Client\Resources\VacancyResource;
-use App\Models\Vacancy;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Infolists\Infolist;
@@ -16,8 +15,11 @@ class ViewVacancy extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make()
-                ->label('Edit Lowongan'),
+            Actions\Action::make('back')
+                ->label('Kembali ke Daftar Lowongan')
+                ->url(VacancyResource::getUrl('index'))
+                ->color('gray')
+                ->icon('heroicon-o-arrow-left'),
         ];
     }
 
@@ -28,7 +30,7 @@ class ViewVacancy extends ViewRecord
                 Components\Section::make('Detail Lowongan')
                     ->schema([
                         Components\TextEntry::make('position_name')
-                            ->label('Posisi'),
+                            ->label('Nama Posisi'),
                         Components\TextEntry::make('level')
                             ->label('Level'),
                         Components\TextEntry::make('status.status_name')
@@ -38,6 +40,12 @@ class ViewVacancy extends ViewRecord
                                 'Open' => 'success',
                                 'On-Process' => 'warning',
                                 'Closed' => 'danger',
+                            })
+                            ->formatStateUsing(fn ($state) => match ($state) {
+                                'Open' => 'Dibuka',
+                                'On-Process' => 'Proses Rekrutmen',
+                                'Closed' => 'Ditutup',
+                                default => $state,
                             }),
                     ])->columns(3),
 
@@ -59,5 +67,15 @@ class ViewVacancy extends ViewRecord
                             ->columnSpanFull(),
                     ]),
             ]);
+    }
+
+    protected function hasDeleteAction(): bool
+    {
+        return false;
+    }
+
+    protected function hasEditAction(): bool
+    {
+        return false;
     }
 }

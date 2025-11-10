@@ -165,10 +165,10 @@ class VacancyResource extends Resource
                         ->label('Edit')
                         ->icon('heroicon-o-pencil'),
                     Tables\Actions\Action::make('viewCandidates')
-                        ->label('Lihat Kandidat')
-                        ->icon('heroicon-o-user-group')
+                        ->label('Lihat Kandidat & Detail')
+                        ->icon('heroicon-o-eye')
                         ->url(fn ($record) => VacancyResource::getUrl('view', ['record' => $record]))
-                        ->color('info'),
+                        ->color('gray'),
                     Tables\Actions\Action::make('closeVacancy')
                         ->label('Tutup Lowongan')
                         ->icon('heroicon-o-lock-closed')

@@ -36,19 +36,19 @@ class VacancyResource extends Resource
                 Forms\Components\Section::make('Detail Lowongan')
                     ->schema([
                         Forms\Components\Select::make('client_id')
-                        ->relationship('client', 'company_name')
-                        ->required()
-                        ->searchable()
-                        ->preload()
-                        ->label('Perusahaan Klien')
-                        ->helperText('Pilih perusahaan klien')
-                        ->default(function () {
-                            // Ambil client_id dari URL parameter
-                            $clientId = request()->query('client_id');
-                            return $clientId ?: null;
-                        })
-                        ->disabled(fn ($operation) => $operation === 'edit') // Optional: disable edit
-                        ->dehydrated(), // Tetap simpan ke database meski disabled
+                            ->relationship('client', 'company_name')
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->label('Perusahaan Klien')
+                            ->helperText('Pilih perusahaan klien')
+                            ->default(function () {
+                                // Ambil client_id dari URL parameter
+                                $clientId = request()->query('client_id');
+                                return $clientId ?: null;
+                            })
+                            ->disabled(fn($operation) => $operation === 'edit') // Optional: disable edit
+                            ->dehydrated(), // Tetap simpan ke database meski disabled
                         Forms\Components\Select::make('status_id')
                             ->relationship('status', 'status_name')
                             ->required()
@@ -110,12 +110,12 @@ class VacancyResource extends Resource
                     ->label('Klien')
                     ->searchable()
                     ->sortable()
-                    ->description(fn ($record) => $record->client->contact_person)
+                    ->description(fn($record) => $record->client->contact_person)
                     ->weight('semibold'),
                 Tables\Columns\TextColumn::make('level')
                     ->label('Level')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'Junior' => 'gray',
                         'Middle' => 'info',
                         'Senior' => 'warning',
@@ -127,7 +127,7 @@ class VacancyResource extends Resource
                 Tables\Columns\TextColumn::make('status.status_name')
                     ->label('Status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'Open' => 'success',
                         'On-Process' => 'warning',
                         'Closed' => 'danger',
@@ -143,7 +143,7 @@ class VacancyResource extends Resource
                         if ($state <= 6) return 'warning';
                         return 'success';
                     })
-                    ->formatStateUsing(fn ($state) => "{$state} kandidat"),
+                    ->formatStateUsing(fn($state) => "{$state} kandidat"),
                 Tables\Columns\TextColumn::make('pending_feedback_count')
                     ->label('Menunggu Review')
                     ->getStateUsing(function ($record) {
@@ -152,8 +152,8 @@ class VacancyResource extends Resource
                             ->count();
                     })
                     ->badge()
-                    ->color(fn ($state) => $state > 0 ? 'warning' : 'gray')
-                    ->formatStateUsing(fn ($state) => $state > 0 ? "{$state} menunggu" : 'Semua direview'),
+                    ->color(fn($state) => $state > 0 ? 'warning' : 'gray')
+                    ->formatStateUsing(fn($state) => $state > 0 ? "{$state} menunggu" : 'Semua direview'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Dibuat')
                     ->dateTime('d M Y')
@@ -195,38 +195,42 @@ class VacancyResource extends Resource
                     Tables\Actions\Action::make('viewSubmissions')
                         ->label('Lihat Pengajuan')
                         ->icon('heroicon-o-user-group')
-                        ->url(fn ($record) => \App\Filament\Admin\Resources\VacancySubmissionResource::getUrl('index', ['tableFilters[vacancy][value]' => $record->id]))
+                        ->url(fn($record) => \App\Filament\Admin\Resources\VacancySubmissionResource::getUrl('index', ['tableFilters[vacancy][value]' => $record->id]))
                         ->color('info'),
-                    Tables\Actions\Action::make('addCandidate')
-                        ->label('Tambah Kandidat')
-                        ->icon('heroicon-o-plus')
-                        ->url(fn ($record) => \App\Filament\Admin\Resources\VacancySubmissionResource::getUrl('create', ['vacancy_id' => $record->id]))
-                        ->color('success'),
                     Tables\Actions\Action::make('closeVacancy')
                         ->label('Tutup Lowongan')
                         ->icon('heroicon-o-lock-closed')
                         ->color('danger')
                         ->requiresConfirmation()
                         ->modalHeading('Tutup Lowongan')
-                        ->modalDescription('Apakah Anda yakin ingin menutup lowongan ini? Kandidat baru tidak akan diterima.')
+                        ->modalDescription('Apakah Anda yakin ingin menutup lowongan ini? Proses rekrutmen akan dihentikan dan tidak bisa lagi menerima kandidat baru.')
                         ->action(function ($record) {
                             $record->update(['status_id' => 3]); // Closed status
                         })
-                        ->visible(fn ($record) => $record->status_id !== 3),
+                        ->visible(fn($record) => in_array($record->status_id, [1, 2])), // Bisa tutup dari Open ATAU On-Process
+
                     Tables\Actions\Action::make('reopenVacancy')
                         ->label('Buka Kembali Lowongan')
                         ->icon('heroicon-o-lock-open')
                         ->color('success')
                         ->requiresConfirmation()
                         ->modalHeading('Buka Kembali Lowongan')
-                        ->modalDescription('Apakah Anda yakin ingin membuka kembali lowongan ini?')
+                        ->modalDescription('Apakah Anda yakin ingin membuka kembali lowongan ini? Lowongan akan kembali ke status Open dan bisa menerima kandidat baru.')
                         ->action(function ($record) {
-                            $record->update(['status_id' => 1]); // Open status
+                            $record->update(['status_id' => 1]); // Closed → Open
                         })
-                        ->visible(fn ($record) => $record->status_id === 3),
+                        ->visible(fn($record) => $record->status_id === 3), // Hanya dari Closed
+
+                    // Update juga addCandidate action
+                    Tables\Actions\Action::make('addCandidate')
+                        ->label('Tambah Kandidat')
+                        ->icon('heroicon-o-plus')
+                        ->url(fn($record) => \App\Filament\Admin\Resources\VacancySubmissionResource::getUrl('create', ['vacancy_id' => $record->id]))
+                        ->color('success')
+                        ->visible(fn($record) => in_array($record->status_id, [1, 2])), // Bisa tambah kandidat di Open & On-Process
                 ])
-                ->button()
-                ->label('Aksi')
+                    ->button()
+                    ->label('Aksi')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

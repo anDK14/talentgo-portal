@@ -160,12 +160,12 @@ class UserResource extends Resource
                     Tables\Actions\EditAction::make()
                         ->label('Edit Pengguna')
                         ->icon('heroicon-o-pencil'),
-                    Tables\Actions\Action::make('sendResetPassword')
-                        ->label('Kirim Tautan Reset')
-                        ->icon('heroicon-o-envelope')
-                        ->color('info')
-                        ->action(function ($record) {
-                        }),
+                    // Tables\Actions\Action::make('sendResetPassword')
+                    //     ->label('Kirim Tautan Reset')
+                    //     ->icon('heroicon-o-envelope')
+                    //     ->color('info')
+                    //     ->action(function ($record) {
+                    //     }),
                     Tables\Actions\Action::make('toggleActive')
                         ->label(fn ($record) => $record->is_active ? 'Nonaktifkan' : 'Aktifkan')
                         ->icon(fn ($record) => $record->is_active ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
