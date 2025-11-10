@@ -42,6 +42,7 @@ class AdminPanelProvider extends PanelProvider
                 'info' => Color::hex('#3B82F6'),
             ])
             ->font('Inter')
+            ->darkMode(false)
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->pages([

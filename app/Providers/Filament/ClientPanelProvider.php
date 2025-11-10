@@ -41,7 +41,8 @@ class ClientPanelProvider extends PanelProvider
                 'warning' => Color::hex('#F59E0B'),
                 'info' => Color::hex('#3B82F6'),
             ])
-            ->font('Inter') // Font modern
+            ->font('Inter')
+            ->darkMode(false)
             ->discoverResources(in: app_path('Filament/Client/Resources'), for: 'App\\Filament\\Client\\Resources')
             ->discoverPages(in: app_path('Filament/Client/Pages'), for: 'App\\Filament\\Client\\Pages')
             ->pages([
