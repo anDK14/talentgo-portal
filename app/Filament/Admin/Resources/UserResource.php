@@ -160,20 +160,11 @@ class UserResource extends Resource
                     Tables\Actions\EditAction::make()
                         ->label('Edit Pengguna')
                         ->icon('heroicon-o-pencil'),
-                    Tables\Actions\Action::make('impersonate')
-                        ->label('Impersonasi')
-                        ->icon('heroicon-o-eye')
-                        ->color('warning')
-                        ->action(function ($record) {
-                            // Placeholder untuk fitur impersonasi
-                        })
-                        ->visible(fn () => auth()->user()->role->role_name === 'admin'),
                     Tables\Actions\Action::make('sendResetPassword')
                         ->label('Kirim Tautan Reset')
                         ->icon('heroicon-o-envelope')
                         ->color('info')
                         ->action(function ($record) {
-                            // Placeholder untuk fitur reset kata sandi
                         }),
                     Tables\Actions\Action::make('toggleActive')
                         ->label(fn ($record) => $record->is_active ? 'Nonaktifkan' : 'Aktifkan')
