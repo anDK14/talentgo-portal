@@ -189,14 +189,20 @@ class VacancyResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('viewSubmissions')
+                        ->label('Lihat Pengajuan')
+                        ->icon('heroicon-o-eye')
+                        ->url(fn($record) => \App\Filament\Admin\Resources\VacancySubmissionResource::getUrl('index', ['tableFilters[vacancy][value]' => $record->id]))
+                        ->color('gray'),
                     Tables\Actions\EditAction::make()
                         ->label('Edit')
                         ->icon('heroicon-o-pencil'),
-                    Tables\Actions\Action::make('viewSubmissions')
-                        ->label('Lihat Pengajuan')
-                        ->icon('heroicon-o-user-group')
-                        ->url(fn($record) => \App\Filament\Admin\Resources\VacancySubmissionResource::getUrl('index', ['tableFilters[vacancy][value]' => $record->id]))
-                        ->color('info'),
+                    Tables\Actions\Action::make('addCandidate')
+                        ->label('Tambah Kandidat')
+                        ->icon('heroicon-o-plus')
+                        ->url(fn($record) => \App\Filament\Admin\Resources\VacancySubmissionResource::getUrl('create', ['vacancy_id' => $record->id]))
+                        ->color('success')
+                        ->visible(fn($record) => in_array($record->status_id, [1, 2])), // Bisa tambah kandidat di Open & On-Process
                     Tables\Actions\Action::make('closeVacancy')
                         ->label('Tutup Lowongan')
                         ->icon('heroicon-o-lock-closed')
@@ -208,7 +214,6 @@ class VacancyResource extends Resource
                             $record->update(['status_id' => 3]); // Closed status
                         })
                         ->visible(fn($record) => in_array($record->status_id, [1, 2])), // Bisa tutup dari Open ATAU On-Process
-
                     Tables\Actions\Action::make('reopenVacancy')
                         ->label('Buka Kembali Lowongan')
                         ->icon('heroicon-o-lock-open')
@@ -220,14 +225,6 @@ class VacancyResource extends Resource
                             $record->update(['status_id' => 1]); // Closed → Open
                         })
                         ->visible(fn($record) => $record->status_id === 3), // Hanya dari Closed
-
-                    // Update juga addCandidate action
-                    Tables\Actions\Action::make('addCandidate')
-                        ->label('Tambah Kandidat')
-                        ->icon('heroicon-o-plus')
-                        ->url(fn($record) => \App\Filament\Admin\Resources\VacancySubmissionResource::getUrl('create', ['vacancy_id' => $record->id]))
-                        ->color('success')
-                        ->visible(fn($record) => in_array($record->status_id, [1, 2])), // Bisa tambah kandidat di Open & On-Process
                 ])
                     ->button()
                     ->label('Aksi')
